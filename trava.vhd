@@ -22,13 +22,13 @@ architecture behavior of trava is
 begin
     process(clock, reset, input)
     begin
-        trava <= '0';
-        if reset = '0' and decrementar = '1' then
+        if reset = '1' then
+            contador <= tempo_para_desarme;
+            trava <= '1';
+        elsif reset = '0' and decrementar = '1' then
             contador <= contador - 1;
             trava <= '1';
         elsif rising_edge(clock) then
-            contador <= tempo_para_desarme;
-            trava <= '1';
             if contador > 0 then
                 if input = std_logic_vector(to_unsigned(senha, 8)) then
                     trava <= '0';
@@ -40,4 +40,5 @@ begin
             end if;
         end if;
     end process;
+    segundos <= std_logic_vector(to_unsigned(contador, 8));
 end architecture;
