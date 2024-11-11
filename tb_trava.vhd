@@ -28,18 +28,17 @@ begin
             reset => reset,
             input => input,
             segundos => segundos,
-            trava => trava
+            trava_s => trava
         );
 
     -- Geração do sinal de clock de 1 Hz (um ciclo a cada 1 segundo)
     clock_process: process
     begin
         for i in 0 to 10 loop
-
-        wait for 500 ms;
-        clock <= not clock;
+            wait for 500 ms;
+            clock <= not clock;
         end loop;
-            wait;
+        wait;
     end process;
 
     -- Processo de estímulo
@@ -53,24 +52,31 @@ begin
         assert trava = '1' report "Erro: A trava deveria estar bloqueada após o reset." severity error;
 
         -- Aguarda um tempo antes de tentar desbloquear
-        wait for 2 sec;
-
-        -- Teste de desbloqueio com senha incorreta
-        input <= std_logic_vector(to_unsigned(50, 8)); -- Senha incorreta
         wait for 1 sec;
-        assert trava = '1' report "Erro: A trava deveria permanecer bloqueada com senha incorreta." severity error;
 
         -- Teste de desbloqueio com senha correta
         input <= std_logic_vector(to_unsigned(senha_correta, 8)); -- Senha correta
         wait for 1 sec;
         assert trava = '0' report "Erro: A trava deveria estar desbloqueada com senha correta." severity error;
+        wait for 1 sec;
 
-        -- Teste de contagem do tempo para bloqueio
-        for i in 1 to tempo_correto loop
+        -- Teste de desbloqueio com senha incorreta
+        input <= std_logic_vector(to_unsigned(50, 8)); -- Senha incorreta
+        wait for 1 sec;
+        assert trava = '1' report "Erro: A trava deveria permanecer bloqueada com senha incorreta." severity error;
+        wait for 1 sec;
+
+        -- Verifique o estado após o tempo de desbloqueio expirar e sem tentar desbloquear
+        reset <= '1';
+        wait for 1 sec;
+        reset <= '0';
+        wait for 1 sec;
+
+        for i in 0 to tempo_correto loop
             wait for 1 sec;
         end loop;
 
-        assert trava = '1' report "Erro: A trava deveria estar bloqueada após o tempo expirar." severity error;
+        assert trava = '1' report "Erro: A trava deveria estar bloqueada apos o tempo expirar." severity error;
 
         -- Finaliza a simulação
         report "Fim dos testes.";
