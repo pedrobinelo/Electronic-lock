@@ -27,4 +27,6 @@ begin
         end if;
     end if;
     end process;
+	 
+	 clk_out <= clk_1hz;
 end architecture;
