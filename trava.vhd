@@ -12,30 +12,38 @@ entity trava is
         reset: in std_logic; -- Reset do sistema
         input: in std_logic_vector(7 downto 0); -- Entrada da senha em binário
         segundos: out std_logic_vector(7 downto 0); -- Tempo restante para o bloqueio em binário
-        trava: out std_logic -- Estado da trava: 1 (bloqueado), 0 (desbloqueado)
+        trava_s: out std_logic -- Estado da trava: 1 (bloqueado), 0 (desbloqueado)
     );
 end entity;
 
 architecture behavior of trava is
     signal contador: integer range 0 to 255 := 0;
-    signal decrementar: std_logic := '1';
+    signal decrement : std_logic := '1';
 begin
     process(clock, reset, input)
     begin
         if reset = '1' then
             contador <= tempo_para_desarme;
-            trava <= '1';
-        elsif reset = '0' and decrementar = '1' then
-            contador <= contador - 1;
-            trava <= '1';
+            trava_s <= '1';
+            decrement <= '1';
         elsif rising_edge(clock) then
+            if decrement = '1' then 
+                if contador > 0 then
+                    contador <= contador - 1;
+                end if;
+                if contador = 0 then
+                    trava_s <= '1';
+                    decrement <= '0';
+                end if;
+            end if;
+            
             if contador > 0 then
                 if input = std_logic_vector(to_unsigned(senha, 8)) then
-                    trava <= '0';
-                    decrementar <= '0';
+                    trava_s <= '0';
+                    decrement <= '0';
                 else
-                    trava <= '1';
-                    decrementar <= '1';
+                    trava_s <= '1';
+                    decrement <= '1';
                 end if;
             end if;
         end if;
