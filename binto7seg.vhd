@@ -14,8 +14,8 @@ begin
     process(input)
     begin
         case input is 
-            when "0000" => display <= "10000000"; -- Exibe 0
-            when "0001" => display <= "11111100"; -- Exibe 1
+            when "0000" => display <= "11000000"; -- Exibe 0
+            when "0001" => display <= "11111001"; -- Exibe 1
             when "0010" => display <= "10100100"; -- Exibe 2
             when "0011" => display <= "10110000"; -- Exibe 3
             when "0100" => display <= "10011001"; -- Exibe 4
